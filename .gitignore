@@ -14,3 +14,4 @@ nb-configuration.xml
 *.war
 *.ear
 hs_err_pid*
+/target/
