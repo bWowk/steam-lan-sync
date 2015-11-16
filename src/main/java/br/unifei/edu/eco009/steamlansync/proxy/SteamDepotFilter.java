@@ -25,7 +25,7 @@ import org.littleshoot.proxy.HttpFiltersSource;
  */
 public class SteamDepotFilter implements HttpFiltersSource {
 
-    public static Hashtable<String, HttpResponseContent> chunks = new Hashtable<>();
+    
 
     @Override
     public HttpFilters filterRequest(HttpRequest originalRequest, ChannelHandlerContext ctx) {
@@ -35,8 +35,8 @@ public class SteamDepotFilter implements HttpFiltersSource {
                 && originalRequest.getUri().contains("chunk")) {
             String appId = UriParser.getAppId(originalRequest);
             String chunkId = UriParser.getChunkId(originalRequest);
-//            if (SteamDepotFilter.chunks.contains(chunkId)) {
-            if (SteamCache.cacheHasChunk(appId, chunkId)) { // se o chunk está em cache,
+            if (SteamCache.hasChunk(chunkId)) {
+
                 // alterar o precedimento da
                 // request:
                 System.out.println("cache HIT");
@@ -46,8 +46,7 @@ public class SteamDepotFilter implements HttpFiltersSource {
 
                     @Override
                     public HttpResponse clientToProxyRequest(HttpObject httpObject) {
-//                        return SteamDepotFilter.chunks.get(chunkId).getFullResponse();
-                        return SteamCache.getChunk(appId, chunkId);
+                        return SteamCache.getChunk(chunkId).copy().retain();
                     }
 
                 };
@@ -60,7 +59,7 @@ public class SteamDepotFilter implements HttpFiltersSource {
                     public HttpObject proxyToClientResponse(HttpObject httpObject) {
                         FullHttpResponse resp = (FullHttpResponse) super.proxyToClientResponse(httpObject);
 //                        SteamDepotFilter.chunks.put(chunkId, new HttpResponseContent(resp));
-                        SteamCache.putChunk(appId, chunkId, resp);
+                        SteamCache.putChunk(chunkId, resp.copy());
                         return resp;
                     }
 

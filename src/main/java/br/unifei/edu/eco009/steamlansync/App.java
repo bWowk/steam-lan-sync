@@ -33,7 +33,6 @@ import io.netty.handler.codec.http.HttpResponse;
 public class App {
 
     public static void main(String[] args) {
-        SteamCache.bootStrap();
         SteamProxy proxyServer = new SteamProxy();
 //        proxyServer.setActivityTracker(true);
         proxyServer.start();
