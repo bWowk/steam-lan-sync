@@ -5,7 +5,7 @@
  */
 package br.unifei.edu.eco009.steamlansync.proxy;
 
-import static br.edu.unifei.eco009.steamlansync.App.chunks;
+import br.unifei.edu.eco009.steamlansync.cache.HttpChunkContents;
 import br.unifei.edu.eco009.steamlansync.cache.SteamCache;
 import br.unifei.edu.eco009.steamlansync.utils.UriParser;
 import io.netty.channel.ChannelHandlerContext;
@@ -14,7 +14,6 @@ import io.netty.handler.codec.http.HttpMethod;
 import io.netty.handler.codec.http.HttpObject;
 import io.netty.handler.codec.http.HttpRequest;
 import io.netty.handler.codec.http.HttpResponse;
-import java.util.Hashtable;
 import org.littleshoot.proxy.HttpFilters;
 import org.littleshoot.proxy.HttpFiltersAdapter;
 import org.littleshoot.proxy.HttpFiltersSource;
@@ -25,59 +24,57 @@ import org.littleshoot.proxy.HttpFiltersSource;
  */
 public class SteamDepotFilter implements HttpFiltersSource {
 
-    
+    private String chunkId;
 
-    @Override
     public HttpFilters filterRequest(HttpRequest originalRequest, ChannelHandlerContext ctx) {
-
         if (originalRequest.getMethod().equals(HttpMethod.GET)
                 && originalRequest.getUri().contains("steampowered.com/depot/")
                 && originalRequest.getUri().contains("chunk")) {
-            String appId = UriParser.getAppId(originalRequest);
-            String chunkId = UriParser.getChunkId(originalRequest);
-            if (SteamCache.hasChunk(chunkId)) {
 
-                // alterar o precedimento da
-                // request:
-                System.out.println("cache HIT");
-                return new HttpFiltersAdapter(originalRequest) {
-                    String appId = UriParser.getAppId(originalRequest);
-                    String chunkId = UriParser.getChunkId(originalRequest);
+            // alterar o precedimento da
+            // request:
+            return new HttpFiltersAdapter(originalRequest) {
+                boolean store = false;
+                String chunkId = UriParser.getChunkId(originalRequest);
+                HttpChunkContents cachedChunk;
 
-                    @Override
-                    public HttpResponse clientToProxyRequest(HttpObject httpObject) {
-                        return SteamCache.getChunk(chunkId).copy().retain();
+                @Override
+                public HttpResponse clientToProxyRequest(HttpObject httpObject) {
+//                        return chunks.get(getChunkId(originalRequest)).copy().retain();
+                    cachedChunk = SteamCache.getChunk(chunkId);
+                    if (cachedChunk == null) {
+                        store = true;
+                        System.out.println("cache MISS");
+                        return super.clientToProxyRequest(httpObject);
                     }
+                    System.out.println("cache HIT");
+                    return cachedChunk.getFullHttpResponse().retain();
 
-                };
-            } else {
-                System.out.println("cache MISS");
-                return new HttpFiltersAdapter(originalRequest) {
-                    String appId = UriParser.getAppId(originalRequest);
-                    String chunkId = UriParser.getChunkId(originalRequest);
-                    @Override
-                    public HttpObject proxyToClientResponse(HttpObject httpObject) {
-                        FullHttpResponse resp = (FullHttpResponse) super.proxyToClientResponse(httpObject);
-//                        SteamDepotFilter.chunks.put(chunkId, new HttpResponseContent(resp));
-                        SteamCache.putChunk(chunkId, resp.copy());
-                        return resp;
+                }
+
+                @Override
+                public HttpObject proxyToClientResponse(HttpObject httpObject) {
+                    FullHttpResponse resp = (FullHttpResponse) super.proxyToClientResponse(httpObject);
+//                        chunks.put(getChunkId(originalRequest), resp.copy());
+                    if (store) {
+                        SteamCache.putChunk(chunkId, new HttpChunkContents(resp));
                     }
+                    return resp;
+                }
 
-                };
-            }
-        } else {
-            return null;
+            };
         }
+        return null;
     }
 
-    @Override
-    public int getMaximumRequestBufferSizeInBytes() {
+public int getMaximumRequestBufferSizeInBytes() {
+        // TODO Auto-generated method stub
         return 10000000;
     }
-
-    @Override
+    
     public int getMaximumResponseBufferSizeInBytes() {
+        // TODO Auto-generated method stub
         return 10000000;
     }
-
+    
 }

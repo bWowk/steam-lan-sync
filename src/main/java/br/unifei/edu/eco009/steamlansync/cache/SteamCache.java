@@ -7,6 +7,8 @@ package br.unifei.edu.eco009.steamlansync.cache;
 
 import io.netty.handler.codec.http.FullHttpResponse;
 import java.util.Hashtable;
+import org.apache.commons.jcs.JCS;
+import org.apache.commons.jcs.access.CacheAccess;
 
 /**
  *
@@ -14,17 +16,26 @@ import java.util.Hashtable;
  */
 public class SteamCache {
 
-    private static Hashtable<String, FullHttpResponse> chunks = new Hashtable<>();
+    private static Hashtable<String, HttpChunkContents> chunks;
+    private static CacheAccess<String, HttpChunkContents> cache;
 
-    public static FullHttpResponse getChunk(String chunkId) {
-        return (FullHttpResponse) chunks.get(chunkId);
+    public static void bootstrap() {
+        chunks = new Hashtable<String, HttpChunkContents>();
+        cache = JCS.getInstance("chunks");
     }
 
-    public static void putChunk(String chunkId, FullHttpResponse response) {
-        chunks.put(chunkId, response);
+    public static boolean cacheHasChunk(String chunkId) {
+//        return (chunks.containsKey(chunkId));
+        return !(cache.get(chunkId) == null);
     }
-    
-    public static boolean hasChunk(String chunkId){
-        return chunks.containsKey(chunkId);
+
+    public static HttpChunkContents getChunk(String chunkId) {
+//        return chunks.get(chunkId);
+        return cache.get(chunkId);
+    }
+
+    public static void putChunk(String chunkId, HttpChunkContents response) {
+//        chunks.put(chunkId, response);
+        cache.put(chunkId, response);
     }
 }
