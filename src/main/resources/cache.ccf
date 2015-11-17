@@ -2,7 +2,7 @@
 ##############################################################
 ##### DEFAULT REGION  ########################################
 
-jcs.default=blockDiskCache
+jcs.default=blockDiskCache,LTCP
 jcs.default.cacheattributes=org.apache.commons.jcs.engine.CompositeCacheAttributes
 jcs.default.cacheattributes.MaxObjects=0
 jcs.default.cacheattributes.MemoryCacheName=org.apache.commons.jcs.engine.memory.lru.LRUMemoryCache
@@ -19,6 +19,22 @@ jcs.auxiliary.blockDiskCache.attributes.MaxKeySize=1000000
 jcs.auxiliary.blockDiskCache.attributes.blockSizeBytes=500
 jcs.auxiliary.blockDiskCache.attributes.EventQueueType=SINGLE
 #jcs.auxiliary.blockDiskCache.attributes.EventQueuePoolName=disk_cache_event_queue
+
+
+# Lateral TCP Cache
+jcs.auxiliary.LTCP=org.apache.commons.jcs.auxiliary.lateral.socket.tcp.LateralTCPCacheFactory
+jcs.auxiliary.LTCP.attributes=org.apache.commons.jcs.auxiliary.lateral.socket.tcp.TCPLateralCacheAttributes
+jcs.auxiliary.LTCP.attributes.TcpListenerPort=1118
+jcs.auxiliary.LTCP.attributes.UdpDiscoveryAddr=228.5.6.8
+jcs.auxiliary.LTCP.attributes.UdpDiscoveryPort=6780
+jcs.auxiliary.LTCP.attributes.UdpDiscoveryEnabled=true
+jcs.auxiliary.LTCP.attributes.Receive=true
+jcs.auxiliary.LTCP.attributes.AllowGet=true
+jcs.auxiliary.LTCP.attributes.IssueRemoveOnPut=false
+jcs.auxiliary.LTCP.attributes.FilterRemoveByHashCode=false
+jcs.auxiliary.LTCP.attributes.SocketTimeoOt=1001
+jcs.auxiliary.LTCP.attributes.OpenTimeOut=2002
+jcs.auxiliary.LTCP.attributes.ZombieQueueMaxSize=2000
 
 ##############################################################
 ################## THREAD POOL CONFIGURATION #################
