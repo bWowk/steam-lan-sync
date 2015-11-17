@@ -24,8 +24,6 @@ import org.littleshoot.proxy.HttpFiltersSource;
  */
 public class SteamDepotFilter implements HttpFiltersSource {
 
-    private String chunkId;
-
     public HttpFilters filterRequest(HttpRequest originalRequest, ChannelHandlerContext ctx) {
         if (originalRequest.getMethod().equals(HttpMethod.GET)
                 && originalRequest.getUri().contains("steampowered.com/depot/")
@@ -36,12 +34,14 @@ public class SteamDepotFilter implements HttpFiltersSource {
             return new HttpFiltersAdapter(originalRequest) {
                 boolean store = false;
                 String chunkId = UriParser.getChunkId(originalRequest);
+                String appId = UriParser.getAppId(originalRequest);
+                
                 HttpChunkContents cachedChunk;
 
                 @Override
                 public HttpResponse clientToProxyRequest(HttpObject httpObject) {
 //                        return chunks.get(getChunkId(originalRequest)).copy().retain();
-                    cachedChunk = SteamCache.getChunk(chunkId);
+                    cachedChunk = SteamCache.getChunk(chunkId,appId);
                     if (cachedChunk == null) {
                         store = true;
                         System.out.println("cache MISS");
@@ -57,7 +57,7 @@ public class SteamDepotFilter implements HttpFiltersSource {
                     FullHttpResponse resp = (FullHttpResponse) super.proxyToClientResponse(httpObject);
 //                        chunks.put(getChunkId(originalRequest), resp.copy());
                     if (store) {
-                        SteamCache.putChunk(chunkId, new HttpChunkContents(resp));
+                        SteamCache.putChunk(chunkId,appId, new HttpChunkContents(resp));
                     }
                     return resp;
                 }
