@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package br.unifei.edu.eco009.steamlansync.utils;
+package br.edu.unifei.eco009.steamlansync.utils;
 
 import io.netty.handler.codec.http.HttpRequest;
 

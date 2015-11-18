@@ -1,7 +1,7 @@
 package br.edu.unifei.eco009.steamlansync;
 
-import br.unifei.edu.eco009.steamlansync.cache.SteamCache;
-import br.unifei.edu.eco009.steamlansync.proxy.SteamProxy;
+import br.edu.unifei.eco009.steamlansync.cache.SteamCache;
+import br.edu.unifei.eco009.steamlansync.proxy.SteamProxy;
 
 import io.netty.handler.codec.http.FullHttpResponse;
 

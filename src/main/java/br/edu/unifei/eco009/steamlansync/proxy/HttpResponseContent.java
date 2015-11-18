@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package br.unifei.edu.eco009.steamlansync.proxy;
+package br.edu.unifei.eco009.steamlansync.proxy;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;

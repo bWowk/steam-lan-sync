@@ -3,9 +3,9 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package br.unifei.edu.eco009.steamlansync.proxy;
+package br.edu.unifei.eco009.steamlansync.proxy;
 
-import br.unifei.edu.eco009.steamlansync.utils.UriParser;
+import br.edu.unifei.eco009.steamlansync.utils.UriParser;
 import io.netty.handler.codec.http.HttpMethod;
 import io.netty.handler.codec.http.HttpRequest;
 import io.netty.handler.codec.http.HttpResponse;

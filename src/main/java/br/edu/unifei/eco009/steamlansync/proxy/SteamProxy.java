@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package br.unifei.edu.eco009.steamlansync.proxy;
+package br.edu.unifei.eco009.steamlansync.proxy;
 
 import org.littleshoot.proxy.HttpProxyServer;
 import org.littleshoot.proxy.HttpProxyServerBootstrap;
@@ -22,7 +22,7 @@ public class SteamProxy {
             HttpProxyServerBootstrap boot = DefaultHttpProxyServer.bootstrap()
                 .withPort(port)
                 .withTransparent(true)
-                .withFiltersSource(new SteamDepotFilter());
+                .withFiltersSource(new SteamDepotFiltersSource());
             if (activityTracker)boot.plusActivityTracker(new SteamActivityTracker());
             server = boot.start();
     }
