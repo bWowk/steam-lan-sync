@@ -36,11 +36,13 @@ public class SteamChunkHttpFilter extends HttpFiltersAdapter {
 //                        return chunks.get(getChunkId(originalRequest)).copy().retain();
         cachedChunk = SteamCache.getChunk(chunkId, appId);
 //      cache MISS:
+        System.out.println("cache MISS, chunk "+chunkId);
         if (cachedChunk == null) {
             store = true;
             return super.clientToProxyRequest(httpObject);
         }
 //      cache HIT:
+        System.out.println("cache HIT, chunk "+chunkId);
         return cachedChunk.getFullHttpResponse().retain();
 
     }
